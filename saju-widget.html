@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <title>육친과 12운성</title>
+  <style>
+    body {
+      font-family: 'Pretendard', sans-serif;
+      padding: 20px;
+      background: #f9f9fb;
+      color: #333;
+    }
+    .container {
+      max-width: 230px;
+      margin: 0 auto;
+      background: white;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .content {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      gap: 16px;
+    }
+    .selectors {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    select {
+      padding: 6px 10px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 20px;
+      color: #4a4a4a;
+    }
+    .data-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-width: 200px;
+    }
+    .data-item {
+      display: flex;
+      justify-content: space-between;
+      background: #f2f4f8;
+      padding: 8px 12px;
+      border-radius: 10px;
+      font-size: 15px;
+    }
+    .data-label {
+      font-weight: 600;
+      min-width: 40px;
+    }
+    .data-values {
+      font-family: monospace;
+      color: #5a5a5a;
+      margin-left: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>육친과 12운성</h2>
+    <div class="content">
+      <div class="selectors">
+        <select id="heavenlyStem">
+          <option>갑</option><option>을</option><option>병</option><option>정</option><option>무</option>
+          <option>기</option><option>경</option><option>신</option><option>임</option><option>계</option>
+        </select>
+        <select id="earthlyBranch">
+          <option>자</option><option>축</option><option>인</option><option>묘</option><option>진</option>
+          <option>사</option><option>오</option><option>미</option><option>신</option><option>유</option><option>술</option><option>해</option>
+        </select>
+      </div>
+      <div class="data-list" id="dataList">
+        <!-- 데이터 결과 리스트 -->
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const heavenlyStem = document.getElementById('heavenlyStem');
+    const earthlyBranch = document.getElementById('earthlyBranch');
+    const dataList = document.getElementById('dataList');
+
+    const fixedData = [
+      "갑", "을", "병", "정", "무",
+      "기", "경", "신", "임", "계"
+    ];
+
+    const yukchinTable = {
+      '갑': { '갑': '비견', '을': '겁재', '병': '식신', '정': '상관', '무': '편재', '기': '정재', '경': '편관', '신': '정관', '임': '편인', '계': '정인' },
+      '을': { '갑': '겁재', '을': '비견', '병': '상관', '정': '식신', '무': '정재', '기': '편재', '경': '정관', '신': '편관', '임': '정인', '계': '편인' },
+      '병': { '갑': '편인', '을': '정인', '병': '비견', '정': '겁재', '무': '식신', '기': '상관', '경': '편재', '신': '정재', '임': '편관', '계': '정관' },
+      '정': { '갑': '정인', '을': '편인', '병': '겁재', '정': '비견', '무': '상관', '기': '식신', '경': '정재', '신': '편재', '임': '정관', '계': '편관' },
+      '무': { '갑': '정관', '을': '편관', '병': '편인', '정': '정인', '무': '비견', '기': '겁재', '경': '식신', '신': '상관', '임': '편재', '계': '정재' },
+      '기': { '갑': '편관', '을': '정관', '병': '정인', '정': '편인', '무': '겁재', '기': '비견', '경': '상관', '신': '식신', '임': '정재', '계': '편재' },
+      '경': { '갑': '정재', '을': '편재', '병': '정관', '정': '편관', '무': '편인', '기': '정인', '경': '비견', '신': '겁재', '임': '식신', '계': '상관' },
+      '신': { '갑': '편재', '을': '정재', '병': '편관', '정': '정관', '무': '정인', '기': '편인', '경': '겁재', '신': '비견', '임': '상관', '계': '식신' },
+      '임': { '갑': '상관', '을': '식신', '병': '편재', '정': '정재', '무': '정관', '기': '편관', '경': '편인', '신': '정인', '임': '비견', '계': '겁재' },
+      '계': { '갑': '식신', '을': '상관', '병': '정재', '정': '편재', '무': '편관', '기': '정관', '경': '정인', '신': '편인', '임': '겁재', '계': '비견' }
+    };
+
+    const unseongTable = {
+      '자': { '갑': '욕', '을': '병', '병': '태', '정': '절', '무': '태', '기': '절', '경': '사', '신': '생', '임': '왕', '계': '록'},
+      '축': { '갑': '대', '을': '쇠', '병': '양', '정': '묘', '무': '양', '기': '묘', '경': '묘', '신': '양', '임': '쇠', '계': '대'},
+      '인': { '갑': '록', '을': '왕', '병': '생', '정': '사', '무': '생', '기': '사', '경': '절', '신': '태', '임': '병', '계': '욕'},
+      '묘': { '갑': '왕', '을': '록', '병': '욕', '정': '병', '무': '욕', '기': '병', '경': '태', '신': '절', '임': '사', '계': '생'},
+      '진': { '갑': '쇠', '을': '대', '병': '대', '정': '쇠', '무': '대', '기': '쇠', '경': '양', '신': '묘', '임': '묘', '계': '양'},
+      '사': { '갑': '병', '을': '욕', '병': '록', '정': '왕', '무': '록', '기': '왕', '경': '생', '신': '사', '임': '절', '계': '태'},
+      '오': { '갑': '사', '을': '생', '병': '왕', '정': '록', '무': '왕', '기': '록', '경': '욕', '신': '병', '임': '태', '계': '절'},
+      '미': { '갑': '묘', '을': '양', '병': '쇠', '정': '대', '무': '쇠', '기': '대', '경': '대', '신': '쇠', '임': '양', '계': '묘'},
+      '신': { '갑': '절', '을': '태', '병': '병', '정': '욕', '무': '병', '기': '욕', '경': '록', '신': '왕', '임': '생', '계': '사'},
+      '유': { '갑': '태', '을': '절', '병': '사', '정': '생', '무': '사', '기': '생', '경': '왕', '신': '록', '임': '욕', '계': '병'},
+      '술': { '갑': '양', '을': '묘', '병': '묘', '정': '양', '무': '묘', '기': '양', '경': '쇠', '신': '대', '임': '대', '계': '쇠'},
+      '해': { '갑': '생', '을': '사', '병': '절', '정': '태', '무': '절', '기': '태', '경': '병', '신': '욕', '임': '록', '계': '왕'},
+    };
+
+    function getYukchin(main, target) {
+      return yukchinTable[main]?.[target] || '-';
+    }
+
+    function getUnseong(branch, stem) {
+      return unseongTable[branch]?.[stem] || '-';
+    }
+
+    function updateDisplay() {
+      const h = heavenlyStem.value;
+      const e = earthlyBranch.value;
+      dataList.innerHTML = '';
+
+      fixedData.forEach(data => {
+        const value1 = getYukchin(h, data);
+        const value2 = getUnseong(e, data);
+
+        const item = document.createElement('div');
+        item.className = 'data-item';
+        item.innerHTML = `
+          <div class="data-label">${data}</div>
+          <div class="data-values">${value1} / ${value2}</div>
+        `;
+        dataList.appendChild(item);
+      });
+    }
+
+    heavenlyStem.addEventListener('change', updateDisplay);
+    earthlyBranch.addEventListener('change', updateDisplay);
+
+    updateDisplay();
+  </script>
+</body>
+</html>
